@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1075987267857",
+    "project_id": "voice-video-chat-app",
+    "storage_bucket": "voice-video-chat-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1075987267857:android:4716faccbd8e506fd7ccb0",
+        "android_client_info": {
+          "package_name": "com.cometchat.chatapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1075987267857-h65v8e5gtrag4qpbol3f1ojju7tatqtl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNDQ-0g1P1XDWXc_1NSpKYW1D07ocNtng"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1075987267857-h65v8e5gtrag4qpbol3f1ojju7tatqtl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

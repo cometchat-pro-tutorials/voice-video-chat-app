@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="@color/white"
+  android:orientation="vertical">
+
+  <LinearLayout
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:orientation="vertical"
+    android:paddingLeft="20dp"
+    android:paddingTop="56dp"
+    android:paddingRight="20dp">
+
+    <EditText
+      android:id="@+id/usernameEdt"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="10dp"
+      android:hint="@string/user_name_edt"
+      android:inputType="text"
+      android:padding="10dp" />
+
+    <EditText
+      android:id="@+id/emailEdt"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="10dp"
+      android:hint="@string/email_edt"
+      android:inputType="textEmailAddress"
+      android:padding="10dp" />
+
+    <EditText
+      android:id="@+id/passwordEdt"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="10dp"
+      android:hint="@string/password_edt"
+      android:inputType="textPassword"
+      android:padding="10dp" />
+    <!-- Login Button -->
+
+    <EditText
+      android:id="@+id/confirmPasswordEdt"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="10dp"
+      android:hint="@string/confirm_password_edt"
+      android:inputType="textPassword"
+      android:padding="10dp" />
+
+    <Button
+      android:id="@+id/registerBtn"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="20dip"
+      android:background="@color/main"
+      android:text="@string/register_btn"
+      android:textColor="@color/white" />
+
+  </LinearLayout>
+
+</LinearLayout>
