@@ -1,6 +1,5 @@
 package com.cometchat.chatapp;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -18,6 +17,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -32,6 +33,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
   private static final String EMPTY_STRING = "";
 
   private FirebaseAuth mAuth;
+  private DatabaseReference mDatabase;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +42,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     this.initViews();
     this.initEvents();
     this.initFirebase();
+    this.initFirebaseDatabase();
     this.initCometChat();
   }
 
@@ -59,24 +62,22 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     this.mAuth = FirebaseAuth.getInstance();
   }
 
+  private void initFirebaseDatabase() {
+    this.mDatabase = FirebaseDatabase.getInstance(Constants.FIREBASE_REALTIME_DATABASE_URL).getReference();
+  }
+
   private void initCometChat() {
     AppSettings appSettings=new AppSettings.AppSettingsBuilder().subscribePresenceForAllUsers().setRegion(Constants.COMETCHAT_REGION).build();
 
     CometChat.init(this, Constants.COMETCHAT_APP_ID, appSettings, new CometChat.CallbackListener<String>() {
       @Override
       public void onSuccess(String successMessage) {
-        Toast.makeText(SignUpActivity.this, "Initialized CometChat Successfully", Toast.LENGTH_SHORT).show();
       }
       @Override
       public void onError(CometChatException e) {
         Toast.makeText(SignUpActivity.this, "Failed to initialize the CometChat", Toast.LENGTH_SHORT).show();
       }
     });
-  }
-
-  private void goToMainScreen() {
-    Intent intent = new Intent(SignUpActivity.this, MainActivity.class);
-    startActivity(intent);
   }
 
   private String generateAvatar() {
@@ -91,20 +92,30 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     return avatars[avatarPosition];
   }
 
-  private void registerCometChatAccount(String username) {
+  private void insertFirebaseDatabase(UserModel userModel) {
+    // Write a message to the database
+    if (userModel != null) {
+      mDatabase.child(Constants.FIREBASE_USERS).child(userModel.getUid()).setValue(userModel);
+    }
+  }
+
+  private void registerCometChatAccount(String username, String email) {
     if (username == null) {
       return;
     }
+    String uid = UUID.randomUUID().toString();
+    String avatar = this.generateAvatar();
     User user = new User();
-    user.setUid(UUID.randomUUID().toString());
+    user.setUid(uid);
     user.setName(username);
-    user.setAvatar(this.generateAvatar());
+    user.setAvatar(avatar);
 
     CometChat.createUser(user, Constants.COMETCHAT_AUTH_KEY, new CometChat.CallbackListener<User>() {
       @Override
       public void onSuccess(User user) {
         Toast.makeText(SignUpActivity.this, user.getName() + " has been created successfully", Toast.LENGTH_SHORT).show();
-        goToMainScreen();
+        UserModel userModel = new UserModel(uid, username, email, avatar);
+        insertFirebaseDatabase(userModel);
       }
 
       @Override
@@ -121,7 +132,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         public void onComplete(@NonNull Task<AuthResult> task) {
           if (task.isSuccessful()) {
             // register to the CometChat.
-            registerCometChatAccount(username);
+            registerCometChatAccount(username, email);
           }
         }
       });

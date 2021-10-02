@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "1075987267857",
+    "firebase_url": "https://voice-video-chat-app-default-rtdb.firebaseio.com",
     "project_id": "voice-video-chat-app",
     "storage_bucket": "voice-video-chat-app.appspot.com"
   },
