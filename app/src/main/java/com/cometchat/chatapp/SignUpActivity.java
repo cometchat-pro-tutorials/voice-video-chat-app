@@ -1,5 +1,6 @@
 package com.cometchat.chatapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -92,6 +93,10 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     return avatars[avatarPosition];
   }
 
+  private void goToLogin() {
+    startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
+  }
+
   private void insertFirebaseDatabase(UserModel userModel) {
     // Write a message to the database
     if (userModel != null) {
@@ -116,6 +121,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         Toast.makeText(SignUpActivity.this, user.getName() + " has been created successfully", Toast.LENGTH_SHORT).show();
         UserModel userModel = new UserModel(uid, username, email, avatar);
         insertFirebaseDatabase(userModel);
+        goToLogin();
       }
 
       @Override

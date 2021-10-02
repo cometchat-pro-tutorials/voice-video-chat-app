@@ -4,6 +4,7 @@ Read the full tutorial here: [**>> How to Build a Voice & Video Chat App in Java
 
 This example shows How to Build a Voice & Video Chat App in Java:
 
+[Live Demo](https://www.dropbox.com/preview/hieptl/comet-chat-todo/voice-video-chat-app-cometchat/voice-video-chat-app.mov?context=browse&role=personal)
 <center><figcaption>How to Build a Voice & Video Chat App in Java</figcaption></center>
 
 ## Technology
