@@ -6,6 +6,9 @@
         <entry key="..\:/hieptl/full-stack/full-stack/front-end/chatapp/app/src/main/res/layout/activity_login.xml" value="0.33" />
         <entry key="..\:/hieptl/full-stack/full-stack/front-end/chatapp/app/src/main/res/layout/activity_main.xml" value="0.20416666666666666" />
         <entry key="..\:/hieptl/full-stack/full-stack/front-end/chatapp/app/src/main/res/layout/activity_sign_up.xml" value="0.20416666666666666" />
+        <entry key="uikit/src/main/res-components/users/layout/app_bar_menu.xml" value="0.24230072463768115" />
+        <entry key="uikit/src/main/res/menu/app_bar_menu.xml" value="0.246875" />
+        <entry key="uikit/src/main/res/menu/group_action_menu.xml" value="0.246875" />
       </map>
     </option>
   </component>
