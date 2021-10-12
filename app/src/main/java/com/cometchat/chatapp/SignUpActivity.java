@@ -1,5 +1,6 @@
 package com.cometchat.chatapp;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -10,7 +11,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.cometchat.pro.core.AppSettings;
 import com.cometchat.pro.core.CometChat;
 import com.cometchat.pro.exceptions.CometChatException;
 import com.cometchat.pro.models.User;
@@ -30,6 +30,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
   private EditText passwordEdt;
   private EditText confirmPasswordEdt;
   private Button registerBtn;
+  private ProgressDialog pDialog;
 
   private static final String EMPTY_STRING = "";
 
@@ -44,7 +45,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     this.initEvents();
     this.initFirebase();
     this.initFirebaseDatabase();
-    this.initCometChat();
   }
 
   private void initViews() {
@@ -53,6 +53,9 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     this.passwordEdt = findViewById(R.id.passwordEdt);
     this.confirmPasswordEdt = findViewById(R.id.confirmPasswordEdt);
     this.registerBtn = findViewById(R.id.registerBtn);
+    this.pDialog = new ProgressDialog(this);
+    this.pDialog.setMessage("Loading");
+    this.pDialog.setCanceledOnTouchOutside(false);
   }
 
   private void initEvents() {
@@ -65,20 +68,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
   private void initFirebaseDatabase() {
     this.mDatabase = FirebaseDatabase.getInstance(Constants.FIREBASE_REALTIME_DATABASE_URL).getReference();
-  }
-
-  private void initCometChat() {
-    AppSettings appSettings=new AppSettings.AppSettingsBuilder().subscribePresenceForAllUsers().setRegion(Constants.COMETCHAT_REGION).build();
-
-    CometChat.init(this, Constants.COMETCHAT_APP_ID, appSettings, new CometChat.CallbackListener<String>() {
-      @Override
-      public void onSuccess(String successMessage) {
-      }
-      @Override
-      public void onError(CometChatException e) {
-        Toast.makeText(SignUpActivity.this, "Failed to initialize the CometChat", Toast.LENGTH_SHORT).show();
-      }
-    });
   }
 
   private String generateAvatar() {
@@ -106,6 +95,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
   private void registerCometChatAccount(String username, String email) {
     if (username == null) {
+      pDialog.dismiss();
       return;
     }
     String uid = UUID.randomUUID().toString();
@@ -118,6 +108,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     CometChat.createUser(user, Constants.COMETCHAT_AUTH_KEY, new CometChat.CallbackListener<User>() {
       @Override
       public void onSuccess(User user) {
+        pDialog.dismiss();
         Toast.makeText(SignUpActivity.this, user.getName() + " has been created successfully", Toast.LENGTH_SHORT).show();
         UserModel userModel = new UserModel(uid, username, email, avatar);
         insertFirebaseDatabase(userModel);
@@ -126,6 +117,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
       @Override
       public void onError(CometChatException e) {
+        pDialog.dismiss();
         Toast.makeText(SignUpActivity.this, "Failed to create your account. Please try again", Toast.LENGTH_SHORT).show();
       }
     });
@@ -139,6 +131,9 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
           if (task.isSuccessful()) {
             // register to the CometChat.
             registerCometChatAccount(username, email);
+          } else {
+            Toast.makeText(SignUpActivity.this, "Fail to create you account. Please try again", Toast.LENGTH_SHORT).show();
+            pDialog.dismiss();
           }
         }
       });
@@ -174,6 +169,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     String password = this.passwordEdt.getText().toString().trim();
     String confirmPassword = this.confirmPasswordEdt.getText().toString().trim();
     if (this.validateAccount(username, email, password, confirmPassword)) {
+      this.pDialog.show();
       this.callFirebaseAuthService(username, email, password);
     }
   }

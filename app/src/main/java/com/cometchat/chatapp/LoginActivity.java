@@ -1,5 +1,6 @@
 package com.cometchat.chatapp;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -11,7 +12,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.cometchat.pro.core.AppSettings;
 import com.cometchat.pro.core.CometChat;
 import com.cometchat.pro.exceptions.CometChatException;
 import com.cometchat.pro.models.User;
@@ -32,6 +32,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
   private EditText passwordEdt;
   private Button loginBtn;
   private TextView registerTxt;
+  private ProgressDialog pDialog;
 
   private static final String EMPTY_STRING = "";
 
@@ -48,7 +49,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     this.initEvents();
     this.initFirebase();
     this.initFirebaseDatabase();
-    this.initCometChat();
   }
 
   @Override
@@ -65,6 +65,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     this.passwordEdt = findViewById(R.id.passwordEdt);
     this.loginBtn = findViewById(R.id.loginBtn);
     this.registerTxt = findViewById(R.id.registerTxt);
+    this.pDialog = new ProgressDialog(this);
+    this.pDialog.setMessage("Loading");
+    this.pDialog.setCanceledOnTouchOutside(false);
   }
 
   private void initEvents() {
@@ -80,20 +83,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     this.mDatabase = FirebaseDatabase.getInstance(Constants.FIREBASE_REALTIME_DATABASE_URL).getReference();
   }
 
-  private void initCometChat() {
-    AppSettings appSettings=new AppSettings.AppSettingsBuilder().subscribePresenceForAllUsers().setRegion(Constants.COMETCHAT_REGION).build();
-
-    CometChat.init(this, Constants.COMETCHAT_APP_ID, appSettings, new CometChat.CallbackListener<String>() {
-      @Override
-      public void onSuccess(String successMessage) {
-      }
-      @Override
-      public void onError(CometChatException e) {
-        Toast.makeText(LoginActivity.this, "Failed to initialize the CometChat", Toast.LENGTH_SHORT).show();
-      }
-    });
-  }
-
   private void goToCometChatUI() {
     startActivity(new Intent(LoginActivity.this, CometChatUI.class));
   }
@@ -104,19 +93,25 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         @Override
         public void onSuccess(User user) {
+          pDialog.dismiss();
           Toast.makeText(LoginActivity.this, "Login Successfully", Toast.LENGTH_SHORT).show();
           goToCometChatUI();
         }
 
         @Override
         public void onError(CometChatException e) {
+          pDialog.dismiss();
+          Toast.makeText(LoginActivity.this, "Fail to log in to CometChat service. Please try again", Toast.LENGTH_SHORT).show();
         }
       });
+    } else {
+      pDialog.dismiss();
     }
   }
 
   private void getUserDetails(String email) {
     if (email == null) {
+      pDialog.dismiss();
       return;
     }
     this.mDatabase.child(Constants.FIREBASE_USERS).orderByChild(Constants.FIREBASE_EMAIL_KEY).equalTo(email).addValueEventListener(new ValueEventListener() {
@@ -126,13 +121,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
           loggedInUser = postSnapshot.getValue(UserModel.class);
           if (loggedInUser != null) {
             loginCometChat();
+          } else {
+            pDialog.dismiss();
           }
         }
       }
 
       @Override
       public void onCancelled(@NonNull DatabaseError databaseError) {
-
+        pDialog.dismiss();
+        Toast.makeText(LoginActivity.this, "Cannot fetch user details information", Toast.LENGTH_SHORT).show();
       }
     });
   }
@@ -145,6 +143,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
           if (task.isSuccessful()) {
             getUserDetails(email);
           } else {
+            pDialog.dismiss();
             Toast.makeText(LoginActivity.this, "Authentication Failed", Toast.LENGTH_SHORT).show();
           }
         }
@@ -167,6 +166,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     String email = this.emailEdt.getText().toString().trim();
     String password = this.passwordEdt.getText().toString().trim();
     if (this.validateUserCredentials(email, password)) {
+      this.pDialog.show();
       // call firebase authentication service.
       this.callFirebaseAuthService(email, password);
     }
