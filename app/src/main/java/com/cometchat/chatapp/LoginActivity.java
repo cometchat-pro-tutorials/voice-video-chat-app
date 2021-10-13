@@ -12,10 +12,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.cometchat.pro.core.AppSettings;
 import com.cometchat.pro.core.CometChat;
 import com.cometchat.pro.exceptions.CometChatException;
 import com.cometchat.pro.models.User;
 import com.cometchat.pro.uikit.ui_components.cometchat_ui.CometChatUI;
+import com.cometchat.pro.uikit.ui_settings.UIKitSettings;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -49,6 +51,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     this.initEvents();
     this.initFirebase();
     this.initFirebaseDatabase();
+    this.initCometChat();
   }
 
   @Override
@@ -81,6 +84,24 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
   private void initFirebaseDatabase() {
     this.mDatabase = FirebaseDatabase.getInstance(Constants.FIREBASE_REALTIME_DATABASE_URL).getReference();
+  }
+
+
+  private void initCometChat() {
+    AppSettings appSettings=new AppSettings.AppSettingsBuilder().subscribePresenceForAllUsers().setRegion(Constants.COMETCHAT_REGION).build();
+
+    CometChat.init(this, Constants.COMETCHAT_APP_ID, appSettings, new CometChat.CallbackListener<String>() {
+      @Override
+      public void onSuccess(String successMessage) {
+        UIKitSettings.setAuthKey(Constants.COMETCHAT_AUTH_KEY);
+        CometChat.setSource("uikit","android","java");
+        Toast.makeText(LoginActivity.this, "Initialized CometChat", Toast.LENGTH_SHORT).show();
+      }
+      @Override
+      public void onError(CometChatException e) {
+        Toast.makeText(LoginActivity.this, "Failure to initialize CometChat", Toast.LENGTH_SHORT).show();
+      }
+    });
   }
 
   private void goToCometChatUI() {
