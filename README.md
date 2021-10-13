@@ -31,12 +31,14 @@ To run the demo, you need to have Android Studio installed on your computer and 
 10. Import and inject your secret keys in the .env file containing your CometChat and Firebase in this manner.
 
 ```js
-String COMETCHAT_APP_ID = xxx-xxx-xxx-xxx-xxx-xxx-xxx-xxx;
-String COMETCHAT_REGION = xxx-xxx-xxx-xxx-xxx-xxx-xxx-xxx;
-String COMETCHAT_AUTH_KEY = xxx-xxx-xxx-xxx-xxx-xxx-xxx-xxx;
-String FIREBASE_REALTIME_DATABASE_URL = xxx-xxx-xxx-xxx-xxx-xxx-xxx-xxx;
-String FIREBASE_EMAIL_KEY = "email"; // this is not a secreat value, it is just a constant variable that will be accessed from different places of the application.
-String FIREBASE_USERS = "users"; // this is not a secreat value, it is just a constant variable that will be accessed from different places of the application.
+public interface Constants {
+    String COMETCHAT_APP_ID = xxx-xxx-xxx-xxx-xxx-xxx-xxx-xxx;
+    String COMETCHAT_REGION = xxx-xxx-xxx-xxx-xxx-xxx-xxx-xxx;
+    String COMETCHAT_AUTH_KEY = xxx-xxx-xxx-xxx-xxx-xxx-xxx-xxx;
+    String FIREBASE_REALTIME_DATABASE_URL = xxx-xxx-xxx-xxx-xxx-xxx-xxx-xxx;
+    String FIREBASE_EMAIL_KEY = "email"; // this is not a secret value, it is just a constant variable that will be accessed from different places of the application.
+    String FIREBASE_USERS = "users"; // this is not a secret value, it is just a constant variable that will be accessed from different places of the application.
+}
 ```
     
 11. Make sure to include the Constants.java file in your gitIgnore file from being exposed online.
